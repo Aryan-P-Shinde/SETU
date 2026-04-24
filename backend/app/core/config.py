@@ -16,6 +16,13 @@ class Settings(BaseSettings):
     # Gemini
     GEMINI_API_KEY: str = ""
 
+    # OpenAI (Whisper API)
+    OPENAI_API_KEY: str = ""
+
+    # Whisper
+    whisper_mode: str = "local"
+    whisper_model: str = "base"
+
     # Auth
     SECRET_KEY: str = "change-me-in-production"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 1 day

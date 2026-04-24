@@ -1,0 +1,57 @@
+rules_version = '2';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Firestore Security Rules — SETU
+//
+// Design:
+//   - Backend (Cloud Run) uses a service account with Admin SDK → bypasses these rules.
+//   - These rules protect direct client-SDK access (frontend / mobile app).
+//   - NGO dashboard uses Firebase Auth (email/password) → authenticated reads on need_cards.
+//   - Volunteer app uses Firebase Auth (phone OTP) → authenticated reads on own record.
+//   - All writes go through the backend — no direct client writes allowed.
+// ─────────────────────────────────────────────────────────────────────────────
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // ── need_cards ────────────────────────────────────────────────────────────
+    // NGO dashboard reads all open need cards.
+    // No client writes — backend only.
+    match /need_cards/{cardId} {
+      allow read: if isSignedIn();
+      allow write: if false; // backend service account only
+    }
+
+    // ── volunteers ────────────────────────────────────────────────────────────
+    // Volunteers can read their own record (for the mobile app).
+    // NGO dashboard can read all (for dispatch matching view).
+    // No client writes — profile updates go through backend.
+    match /volunteers/{volunteerId} {
+      allow read: if isSignedIn();
+      allow write: if false; // backend service account only
+    }
+
+    // ── dispatch_log ──────────────────────────────────────────────────────────
+    // Volunteers can read their own dispatches.
+    // NGO can read all.
+    // No client writes.
+    match /dispatch_log/{dispatchId} {
+      allow read: if isSignedIn();
+      allow write: if false; // backend service account only
+    }
+
+    // ── Default: deny everything else ─────────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

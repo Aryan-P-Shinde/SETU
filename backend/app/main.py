@@ -4,7 +4,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.routers import health
+from app.routers import health, brief
+from app.routers.channels import text_channel, voice_channel, image_channel, whatsapp_channel
 
 
 @asynccontextmanager
@@ -29,5 +30,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Routers
+# ── Core ──────────────────────────────────────────────────────────────────────
 app.include_router(health.router, prefix="/api/v1")
+app.include_router(brief.router, prefix="/api/v1")
+
+# ── Intake channels (all funnel to intake_service.process_intake) ─────────────
+app.include_router(text_channel.router, prefix="/api/v1")
+app.include_router(voice_channel.router, prefix="/api/v1")
+app.include_router(image_channel.router, prefix="/api/v1")
+app.include_router(whatsapp_channel.router, prefix="/api/v1")  # Phase 5B stub

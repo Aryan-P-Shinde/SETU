@@ -1,39 +1,64 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: solution-challenge-api
+  name: setu-api
+  # Change region in the gcloud deploy command (Makefile: asia-south1)
   annotations:
     run.googleapis.com/ingress: all
 spec:
   template:
     metadata:
       annotations:
+        # Scale to zero when idle (cost saving for a prototype)
         autoscaling.knative.dev/minScale: "0"
         autoscaling.knative.dev/maxScale: "10"
+        # 4 GB RAM needed if you use whisper medium/large locally.
+        # For Phase 1 prototype (whisper=base or WHISPER_MODE=api), 512 Mi is enough.
     spec:
+      # Increase timeout for Whisper transcription on cold start
+      timeoutSeconds: 300
       containers:
-        - image: gcr.io/YOUR_PROJECT_ID/solution-challenge-api:latest
+        - image: gcr.io/YOUR_PROJECT_ID/setu-api:latest
+          # Replace YOUR_PROJECT_ID with your actual GCP project ID.
+          # After `gcloud run deploy` this is set automatically.
           ports:
             - containerPort: 8080
           env:
             - name: DEBUG
               value: "false"
+
+            # ── Secrets (set via: gcloud secrets create <name> --data-file=-) ──
             - name: FIREBASE_PROJECT_ID
               valueFrom:
                 secretKeyRef:
                   name: firebase-project-id
                   key: latest
+
             - name: GEMINI_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: gemini-api-key
                   key: latest
+
             - name: SECRET_KEY
               valueFrom:
                 secretKeyRef:
                   name: app-secret-key
                   key: latest
+
+            # ── Non-secret env vars ────────────────────────────────────────────
+            - name: WHISPER_MODE
+              # Use 'api' on Cloud Run (no GPU, cold starts too slow for local model)
+              # Set OPENAI_API_KEY secret if using api mode
+              value: "api"
+
+            - name: ALLOWED_ORIGINS
+              # Replace with your actual Firebase Hosting URL after first deploy
+              value: '["https://YOUR_PROJECT_ID.web.app","https://YOUR_PROJECT_ID.firebaseapp.com"]'
+
           resources:
             limits:
               cpu: "1"
+              # 512Mi is enough for Phase 1 with WHISPER_MODE=api
+              # Increase to 2Gi if running whisper locally
               memory: 512Mi

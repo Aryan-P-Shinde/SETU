@@ -1,0 +1,225 @@
+[
+  {
+    "id": "brief_eval_001",
+    "description": "Rescue — high urgency, full contact info, clear location",
+    "needcard": {
+      "need_type": "rescue",
+      "description_clean": "Three people trapped on rooftop at 45 MG Road after flood waters rose. Ground floor completely submerged. No food or water for 8 hours.",
+      "urgency_score_eff": 9.5,
+      "urgency_reasoning": "Life threat: people stranded with rising water, 8+ hours without supplies.",
+      "affected_count": 3,
+      "skills_needed": ["search_rescue", "logistics_boat_operator"],
+      "location_text_raw": "45 MG Road, near old post office, Ward 3",
+      "contact_name": "Priya Sharma",
+      "contact_detail": "9876543210",
+      "geo_confidence": 0.92
+    },
+    "volunteer_skills": ["search_rescue", "logistics_boat_operator"],
+    "language": "en",
+    "eval_criteria": {
+      "must_include": ["MG Road", "9876543210", "Priya", "life jacket", "boat"],
+      "must_not_include": ["TBD", "[?]", "unknown"],
+      "word_count_range": [60, 140]
+    }
+  },
+  {
+    "id": "brief_eval_002",
+    "description": "Food — Hindi language brief, medium urgency",
+    "needcard": {
+      "need_type": "food",
+      "description_clean": "40 families in Ward 12 have had no food for 2 days. Children and elderly badly affected.",
+      "urgency_score_eff": 7.5,
+      "urgency_reasoning": "40 families, 2 days without food, children involved — serious but not immediately fatal.",
+      "affected_count": 40,
+      "skills_needed": ["food_distribution"],
+      "location_text_raw": "Ward 12, near the government school",
+      "contact_name": "Ramesh Kumar",
+      "contact_detail": "9887654321",
+      "geo_confidence": 0.85
+    },
+    "volunteer_skills": ["food_distribution", "food_cooking"],
+    "language": "hi",
+    "eval_criteria": {
+      "must_include": ["Ward 12", "9887654321"],
+      "word_count_range": [60, 140]
+    }
+  },
+  {
+    "id": "brief_eval_003",
+    "description": "Medical — critical, no contact info, no confirmed location",
+    "needcard": {
+      "need_type": "medical",
+      "description_clean": "Diabetic patients at relief camp have run out of insulin. Life threatening for multiple patients.",
+      "urgency_score_eff": 9.5,
+      "urgency_reasoning": "Missing insulin for diabetics is life-threatening within hours.",
+      "affected_count": 8,
+      "skills_needed": ["medical_doctor"],
+      "location_text_raw": "",
+      "contact_name": null,
+      "contact_detail": null,
+      "geo_confidence": 0.0
+    },
+    "volunteer_skills": ["medical_doctor", "medical_nurse"],
+    "language": "en",
+    "eval_criteria": {
+      "must_include": ["insulin", "CRITICAL"],
+      "must_not_include": ["contact TBD", "location unknown"],
+      "word_count_range": [60, 140]
+    }
+  },
+  {
+    "id": "brief_eval_004",
+    "description": "Water — Bengali language, contamination, full details",
+    "needcard": {
+      "need_type": "water",
+      "description_clean": "Drinking water supply contaminated after flooding. 55 people affected, children showing diarrhoea symptoms.",
+      "urgency_score_eff": 8.5,
+      "urgency_reasoning": "Water-borne illness already developing in children. Urgent purification needed.",
+      "affected_count": 55,
+      "skills_needed": ["water_purification", "water_distribution"],
+      "location_text_raw": "Mirpur Block D, House 15",
+      "contact_name": "Meena Ghosh",
+      "contact_detail": "9001234567",
+      "geo_confidence": 0.78
+    },
+    "volunteer_skills": ["water_purification"],
+    "language": "bn",
+    "eval_criteria": {
+      "must_include": ["Mirpur", "9001234567"],
+      "word_count_range": [60, 140]
+    }
+  },
+  {
+    "id": "brief_eval_005",
+    "description": "Shelter — volunteer has mismatched skills, brief should still be useful",
+    "needcard": {
+      "need_type": "shelter",
+      "description_clean": "Family of 6 including a 3-month-old infant. House collapsed overnight. Currently exposed outside near Durga Mandir Sector 5.",
+      "urgency_score_eff": 8.0,
+      "urgency_reasoning": "Infant and elderly exposed to elements. High urgency but not immediately fatal.",
+      "affected_count": 6,
+      "skills_needed": ["logistics_coordination"],
+      "location_text_raw": "Near Durga Mandir, Sector 5",
+      "contact_name": "Suresh Mondal",
+      "contact_detail": "9123456780",
+      "geo_confidence": 0.88
+    },
+    "volunteer_skills": ["food_distribution", "child_care"],
+    "language": "en",
+    "eval_criteria": {
+      "must_include": ["Sector 5", "9123456780", "tarpaulin"],
+      "word_count_range": [60, 140]
+    }
+  },
+  {
+    "id": "brief_eval_006",
+    "description": "Logistics — low urgency, no supplies to bring, concise",
+    "needcard": {
+      "need_type": "logistics",
+      "description_clean": "200 boxes of dry rations need transport from Industrial Area Phase 2 warehouse to Stadium Ground relief camp.",
+      "urgency_score_eff": 4.0,
+      "urgency_reasoning": "Logistics coordination — important but no immediate life threat.",
+      "affected_count": 200,
+      "skills_needed": ["logistics_driver", "logistics_coordination"],
+      "location_text_raw": "Industrial Area Phase 2, Warehouse Block C",
+      "contact_name": "Suresh Manager",
+      "contact_detail": "8800112233",
+      "geo_confidence": 0.91
+    },
+    "volunteer_skills": ["logistics_driver"],
+    "language": "en",
+    "eval_criteria": {
+      "must_include": ["Industrial Area", "8800112233", "LOW"],
+      "word_count_range": [60, 140]
+    }
+  },
+  {
+    "id": "brief_eval_007",
+    "description": "Medical — snake bite, extreme urgency, time-sensitive",
+    "needcard": {
+      "need_type": "medical",
+      "description_clean": "8-year-old child bitten by snake in Mohalla Purana Qila. Antivenom urgently needed. Family has no vehicle. Nearest hospital 15km away.",
+      "urgency_score_eff": 9.2,
+      "urgency_reasoning": "Child snakebite — antivenom window is 1-4 hours. Life-threatening.",
+      "affected_count": 1,
+      "skills_needed": ["medical_paramedic", "logistics_driver"],
+      "location_text_raw": "Mohalla Purana Qila",
+      "contact_name": "Child's father",
+      "contact_detail": "9000123456",
+      "geo_confidence": 0.72
+    },
+    "volunteer_skills": ["medical_paramedic", "logistics_driver"],
+    "language": "en",
+    "eval_criteria": {
+      "must_include": ["Purana Qila", "9000123456", "antivenom", "CRITICAL"],
+      "word_count_range": [60, 140]
+    }
+  },
+  {
+    "id": "brief_eval_008",
+    "description": "Other — mental health, soft skills, no physical supplies",
+    "needcard": {
+      "need_type": "other",
+      "description_clean": "200 flood survivors at Sadar Hospital camp experiencing severe trauma. Children especially affected. Mental health and emotional support needed.",
+      "urgency_score_eff": 5.5,
+      "urgency_reasoning": "Mental health crisis is serious but not immediately life-threatening. Respond today.",
+      "affected_count": 200,
+      "skills_needed": ["mental_health_counseling", "child_care"],
+      "location_text_raw": "Sadar Hospital Camp, Main Building",
+      "contact_name": "Camp Coordinator",
+      "contact_detail": "9876001234",
+      "geo_confidence": 0.95
+    },
+    "volunteer_skills": ["mental_health_counseling", "child_care"],
+    "language": "en",
+    "eval_criteria": {
+      "must_include": ["Sadar Hospital", "9876001234", "MODERATE"],
+      "must_not_include": ["bring", "kit", "supplies"],
+      "word_count_range": [60, 140]
+    }
+  },
+  {
+    "id": "brief_eval_009",
+    "description": "Rescue — mass casualty, multiple skills, complex scenario",
+    "needcard": {
+      "need_type": "rescue",
+      "description_clean": "Approximately 50 workers trapped under debris at Industrial Estate Plot 7, Phase 3 after building collapse. Fire brigade on site but more rescue teams and paramedics urgently needed.",
+      "urgency_score_eff": 9.9,
+      "urgency_reasoning": "50 people trapped under debris — highest possible urgency. Every minute counts.",
+      "affected_count": 50,
+      "skills_needed": ["search_rescue", "medical_paramedic", "debris_clearance"],
+      "location_text_raw": "Industrial Estate Plot 7, Phase 3",
+      "contact_name": "Site Manager",
+      "contact_detail": "9911223344",
+      "geo_confidence": 0.89
+    },
+    "volunteer_skills": ["search_rescue", "debris_clearance"],
+    "language": "en",
+    "eval_criteria": {
+      "must_include": ["Industrial Estate", "Plot 7", "9911223344", "CRITICAL"],
+      "word_count_range": [60, 140]
+    }
+  },
+  {
+    "id": "brief_eval_010",
+    "description": "Food — Marathi language, high count, cooking skills available",
+    "needcard": {
+      "need_type": "food",
+      "description_clean": "Hospital kitchen equipment damaged. 120 patients and 50 staff need cooked food for the next 24 hours.",
+      "urgency_score_eff": 7.5,
+      "urgency_reasoning": "Hospital patients need food — not immediately fatal but urgent and high count.",
+      "affected_count": 170,
+      "skills_needed": ["food_cooking", "food_distribution"],
+      "location_text_raw": "District General Hospital, Kitchen Block B",
+      "contact_name": "Hospital Admin",
+      "contact_detail": "9812999888",
+      "geo_confidence": 0.94
+    },
+    "volunteer_skills": ["food_cooking", "food_distribution"],
+    "language": "mr",
+    "eval_criteria": {
+      "must_include": ["Hospital", "9812999888"],
+      "word_count_range": [60, 140]
+    }
+  }
+]

@@ -1,0 +1,371 @@
+[
+  {
+    "id": "eval_001",
+    "description": "Clear English - medical emergency, high urgency",
+    "input": "A man fell from the roof during the flood. He has a broken leg and is bleeding heavily. He is at the Shiv temple near Chandannagar ward 7. His wife is waiting there. Contact Priya at 9876543210.",
+    "expected": {
+      "need_type": "medical",
+      "urgency_score_min": 8.0,
+      "urgency_score_max": 10.0,
+      "affected_count": 1,
+      "skills_needed_includes": ["medical_first_aid", "medical_doctor"],
+      "contact_detail_contains": "9876543210",
+      "location_text_contains": "Chandannagar"
+    }
+  },
+  {
+    "id": "eval_002",
+    "description": "Hindi voice transcript - food shortage, medium urgency",
+    "input": "नमस्ते, मैं वार्ड 12 से बोल रहा हूं। यहां करीब 40 परिवार हैं जिनके पास दो दिन से खाना नहीं है। बच्चे बहुत परेशान हैं। कृपया जल्दी मदद भेजें। मेरा नाम रमेश है।",
+    "expected": {
+      "need_type": "food",
+      "urgency_score_min": 6.0,
+      "urgency_score_max": 9.0,
+      "affected_count": 40,
+      "skills_needed_includes": ["food_distribution"],
+      "contact_name_contains": "रमेश"
+    }
+  },
+  {
+    "id": "eval_003",
+    "description": "Bengali - water contamination",
+    "input": "আমাদের এলাকায় পানির সমস্যা হয়েছে। বন্যার পর থেকে পানি দূষিত। ৫০ জনের বেশি মানুষ আছে। শিশুরা অসুস্থ হয়ে পড়ছে। ঠিকানা: মিরপুর ব্লক ডি, ঘর নম্বর ১৫।",
+    "expected": {
+      "need_type": "water",
+      "urgency_score_min": 7.0,
+      "urgency_score_max": 10.0,
+      "affected_count": 50,
+      "skills_needed_includes": ["water_purification"],
+      "location_text_contains": "মিরপুর"
+    }
+  },
+  {
+    "id": "eval_004",
+    "description": "Rescue - people trapped",
+    "input": "3 people are trapped on the roof of a building at 45 MG Road after flood water rose. The ground floor is completely submerged. They have been there since morning, about 8 hours. No food, no water. The building is near the old post office.",
+    "expected": {
+      "need_type": "rescue",
+      "urgency_score_min": 8.5,
+      "urgency_score_max": 10.0,
+      "affected_count": 3,
+      "skills_needed_includes": ["search_rescue", "logistics_boat_operator"],
+      "location_text_contains": "MG Road"
+    }
+  },
+  {
+    "id": "eval_005",
+    "description": "Shelter request - displaced family",
+    "input": "Our house collapsed in the rain last night. We are a family of 6 including two elderly parents and a 3 month old baby. Currently standing outside. Please arrange shelter. Near Durga mandir, Sector 5.",
+    "expected": {
+      "need_type": "shelter",
+      "urgency_score_min": 7.0,
+      "urgency_score_max": 9.5,
+      "affected_count": 6,
+      "skills_needed_includes": ["logistics_coordination"],
+      "location_text_contains": "Sector 5"
+    }
+  },
+  {
+    "id": "eval_006",
+    "description": "Low urgency - logistics coordination",
+    "input": "We need a vehicle to transport 200 boxes of dry rations from our warehouse at Industrial Area Phase 2 to the relief camp at Stadium Ground. The boxes are ready. Contact warehouse manager Suresh at 8800112233.",
+    "expected": {
+      "need_type": "logistics",
+      "urgency_score_min": 3.0,
+      "urgency_score_max": 6.0,
+      "skills_needed_includes": ["logistics_driver"],
+      "contact_detail_contains": "8800112233"
+    }
+  },
+  {
+    "id": "eval_007",
+    "description": "Hinglish code-switching - medical",
+    "input": "Bhai ek pregnant lady hai jo abhi deliver karne wali hai. Hospital road blocked hai flood ke wajah se. Uske paas koi doctor nahi hai. Bohot urgent hai. Location: Andheri East, near railway crossing.",
+    "expected": {
+      "need_type": "medical",
+      "urgency_score_min": 9.0,
+      "urgency_score_max": 10.0,
+      "skills_needed_includes": ["medical_doctor", "medical_nurse"],
+      "location_text_contains": "Andheri East"
+    }
+  },
+  {
+    "id": "eval_008",
+    "description": "WhatsApp forward style - duplicate phrases",
+    "input": "URGENT URGENT URGENT!!! Please share!! 20 people need food in Rajiv Nagar!! 20 people no food Rajiv Nagar!! Contact: 9988776655 URGENT PLEASE SHARE!!!",
+    "expected": {
+      "need_type": "food",
+      "urgency_score_min": 5.0,
+      "urgency_score_max": 8.0,
+      "affected_count": 20,
+      "contact_detail_contains": "9988776655",
+      "description_clean_not_contains": "URGENT URGENT"
+    }
+  },
+  {
+    "id": "eval_009",
+    "description": "Multiple needs in one report - should pick primary",
+    "input": "At village Rampur, bridge washed out. 15 families stranded. 2 people injured with cuts. No food since yesterday. Children crying. Local contact Meena 7654321098.",
+    "expected": {
+      "need_type_one_of": ["rescue", "medical", "food"],
+      "urgency_score_min": 7.0,
+      "urgency_score_max": 10.0,
+      "affected_count": 15,
+      "contact_detail_contains": "7654321098"
+    }
+  },
+  {
+    "id": "eval_010",
+    "description": "Elderly care need",
+    "input": "There is an 80-year-old woman alone in her flooded home at 12 Patel Nagar. She cannot walk. Her family is stuck elsewhere. She needs to be evacuated and cared for. Call her neighbour Rajan at 9123456780.",
+    "expected": {
+      "need_type": "rescue",
+      "urgency_score_min": 8.0,
+      "urgency_score_max": 10.0,
+      "affected_count": 1,
+      "skills_needed_includes": ["search_rescue", "elderly_care"],
+      "contact_detail_contains": "9123456780"
+    }
+  },
+  {
+    "id": "eval_011",
+    "description": "Hindi - water rescue",
+    "input": "यहां बाढ़ का पानी बहुत तेज है। नाव चाहिए। 25 लोग फंसे हैं। उनके पास खाना है लेकिन पानी का स्तर बढ़ रहा है। गांव का नाम है नलकूप वाली गली, कस्बा घाट।",
+    "expected": {
+      "need_type": "rescue",
+      "urgency_score_min": 7.5,
+      "urgency_score_max": 10.0,
+      "affected_count": 25,
+      "skills_needed_includes": ["logistics_boat_operator", "search_rescue"]
+    }
+  },
+  {
+    "id": "eval_012",
+    "description": "Medical - snake bite",
+    "input": "Child bitten by snake in Mohalla Purana Qila. Boy is 8 years old. Antivenom needed urgently. Family has no vehicle. Nearest hospital 15km away. Father's number 9000123456.",
+    "expected": {
+      "need_type": "medical",
+      "urgency_score_min": 9.0,
+      "urgency_score_max": 10.0,
+      "affected_count": 1,
+      "skills_needed_includes": ["medical_paramedic", "logistics_driver"],
+      "contact_detail_contains": "9000123456"
+    }
+  },
+  {
+    "id": "eval_013",
+    "description": "Bengali - mental health after disaster",
+    "input": "বন্যায় ঘর হারানোর পর অনেক মানুষ মানসিকভাবে ভেঙে পড়েছেন। ক্যাম্পে ২০০ জন আছেন যাদের কাউন্সেলিং দরকার। বিশেষ করে শিশুরা ট্রমায় আছে। লোকেশন: সদর হাসপাতাল ক্যাম্প।",
+    "expected": {
+      "need_type": "other",
+      "urgency_score_min": 4.0,
+      "urgency_score_max": 7.0,
+      "affected_count": 200,
+      "skills_needed_includes": ["mental_health_counseling", "child_care"]
+    }
+  },
+  {
+    "id": "eval_014",
+    "description": "Handwritten form OCR output - noisy text",
+    "input": "Nam: Sunita Devi\nLoc: Viilage Khurd neer the schol\nNeed: Medicin for fevr and diarhea\nPeople: abot 30\nPhn: 801234 5678",
+    "expected": {
+      "need_type": "medical",
+      "urgency_score_min": 5.0,
+      "urgency_score_max": 8.0,
+      "affected_count": 30,
+      "contact_name_contains": "Sunita",
+      "contact_detail_contains": "8012345678"
+    }
+  },
+  {
+    "id": "eval_015",
+    "description": "Null location - should still extract other fields",
+    "input": "We need baby food urgently. Infants aged 0-6 months. Around 15 babies. No formula available anywhere. Please help. My number is 9871234567.",
+    "expected": {
+      "need_type": "food",
+      "urgency_score_min": 8.0,
+      "urgency_score_max": 10.0,
+      "affected_count": 15,
+      "contact_detail_contains": "9871234567"
+    }
+  },
+  {
+    "id": "eval_016",
+    "description": "Structural damage - engineering need",
+    "input": "The school building roof partially collapsed. Nobody was inside thankfully. But 300 students have no place to shelter now. Building needs to be assessed if it is safe. Near City Bus Stand, Ward 3.",
+    "expected": {
+      "need_type": "shelter",
+      "urgency_score_min": 5.0,
+      "urgency_score_max": 8.0,
+      "affected_count": 300,
+      "skills_needed_includes": ["structural_assessment"]
+    }
+  },
+  {
+    "id": "eval_017",
+    "description": "Very vague report - minimum viable extraction",
+    "input": "Please send help to Gandhi Nagar. People are suffering.",
+    "expected": {
+      "need_type_one_of": ["other", "logistics", "food", "shelter"],
+      "urgency_score_min": 3.0,
+      "urgency_score_max": 7.0,
+      "location_text_contains": "Gandhi Nagar"
+    }
+  },
+  {
+    "id": "eval_018",
+    "description": "High volume - mass casualty",
+    "input": "Building collapse at Industrial Estate. Approximately 50 workers trapped under debris. Fire brigade alerted but need more rescue teams and paramedics. Location: Plot 7, Industrial Estate Phase 3.",
+    "expected": {
+      "need_type": "rescue",
+      "urgency_score_min": 9.5,
+      "urgency_score_max": 10.0,
+      "affected_count": 50,
+      "skills_needed_includes": ["search_rescue", "medical_paramedic", "debris_clearance"]
+    }
+  },
+  {
+    "id": "eval_019",
+    "description": "Tamil language report",
+    "input": "திருவண்ணாமலை மாவட்டத்தில் 100 குடும்பங்களுக்கு குடிநீர் இல்லை. கிணற்று நீர் மாசடைந்துள்ளது. குழந்தைகளுக்கு வயிற்றுப்போக்கு வருகிறது. தொடர்பு: முனியசாமி 94443 21234.",
+    "expected": {
+      "need_type": "water",
+      "urgency_score_min": 7.0,
+      "urgency_score_max": 10.0,
+      "affected_count": 100,
+      "skills_needed_includes": ["water_purification"],
+      "contact_detail_contains": "9444321234"
+    }
+  },
+  {
+    "id": "eval_020",
+    "description": "Duplicate-style report - description_clean should not repeat",
+    "input": "Food needed. We need food. Please send food. 50 families no food. 50 families are starving. Need food urgently. Food please. Village Bhatpara near the main road.",
+    "expected": {
+      "need_type": "food",
+      "urgency_score_min": 6.0,
+      "urgency_score_max": 9.0,
+      "affected_count": 50,
+      "location_text_contains": "Bhatpara",
+      "description_clean_max_length": 300
+    }
+  },
+  {
+    "id": "eval_021",
+    "description": "Night emergency - time context increases urgency",
+    "input": "It is 2am. An old man had a heart attack. No hospital within 30km is open. He needs immediate help. House no 5, Gali no 3, Ram Colony, Meerut.",
+    "expected": {
+      "need_type": "medical",
+      "urgency_score_min": 9.0,
+      "urgency_score_max": 10.0,
+      "affected_count": 1,
+      "skills_needed_includes": ["medical_doctor"],
+      "location_text_contains": "Meerut"
+    }
+  },
+  {
+    "id": "eval_022",
+    "description": "Child welfare - child care skills",
+    "input": "Around 40 children aged 5-12 are at the relief camp alone. Their parents are missing or hospitalised. They need food, supervision, and emotional support. Camp is at Nehru Stadium.",
+    "expected": {
+      "need_type_one_of": ["other", "food", "shelter"],
+      "urgency_score_min": 6.0,
+      "urgency_score_max": 9.0,
+      "affected_count": 40,
+      "skills_needed_includes": ["child_care", "mental_health_counseling"]
+    }
+  },
+  {
+    "id": "eval_023",
+    "description": "Communications infrastructure need",
+    "input": "Our relief camp coordinator has lost contact with 3 field teams. We need someone who can set up radio communication or satellite phones. This is blocking all coordination. HQ at District Collectorate.",
+    "expected": {
+      "need_type": "logistics",
+      "urgency_score_min": 6.0,
+      "urgency_score_max": 9.0,
+      "skills_needed_includes": ["communications", "logistics_coordination"]
+    }
+  },
+  {
+    "id": "eval_024",
+    "description": "Electrical hazard - safety risk",
+    "input": "Live electrical wires are hanging over the flood water in New Colony area. Very dangerous. Children playing nearby. Someone could get electrocuted. Electricity board not responding. Need urgent help.",
+    "expected": {
+      "need_type": "other",
+      "urgency_score_min": 8.0,
+      "urgency_score_max": 10.0,
+      "skills_needed_includes": ["engineering_electrical"]
+    }
+  },
+  {
+    "id": "eval_025",
+    "description": "Marathi language report",
+    "input": "आमच्या गावात पूर आला आहे. 75 कुटुंबे अडकली आहेत. जेवण नाही, पाणी नाही. नाव लागेल. ग्राम: वडाळा, तालुका कोल्हापूर. संपर्क: ग्रामसेवक महेश 9765432100.",
+    "expected": {
+      "need_type_one_of": ["rescue", "food", "water"],
+      "urgency_score_min": 7.5,
+      "urgency_score_max": 10.0,
+      "affected_count": 75,
+      "skills_needed_includes": ["logistics_boat_operator"],
+      "contact_detail_contains": "9765432100"
+    }
+  },
+  {
+    "id": "eval_026",
+    "description": "Informational only - low urgency",
+    "input": "Just to inform you that the relief camp at Sector 10 has received enough blankets. No more needed here. You can redirect blanket supplies to other areas.",
+    "expected": {
+      "need_type": "logistics",
+      "urgency_score_min": 0.0,
+      "urgency_score_max": 3.0
+    }
+  },
+  {
+    "id": "eval_027",
+    "description": "Legal aid need - rare type",
+    "input": "Many flood victims in Kalyanpur have lost their documents - aadhaar, ration card, land records. They cannot access government relief without these. Need legal aid volunteers who can help with document recovery.",
+    "expected": {
+      "need_type": "other",
+      "urgency_score_min": 3.0,
+      "urgency_score_max": 6.0,
+      "skills_needed_includes": ["legal_aid"]
+    }
+  },
+  {
+    "id": "eval_028",
+    "description": "Voice transcript with filler words and repetition",
+    "input": "Haan ji haan... toh yahan pe... ek aurat hai jo... matlab unka baccha hua hai abhi kuch ghante pehle... toh vo dono theek hain lekin... unhe hospital jana chahiye... lekin road nahi hai... haan... Lal Bagh ke paas hai... aur unka naam Fatima hai shayad.",
+    "expected": {
+      "need_type": "medical",
+      "urgency_score_min": 7.0,
+      "urgency_score_max": 10.0,
+      "affected_count": 2,
+      "skills_needed_includes": ["medical_nurse", "logistics_driver"],
+      "location_text_contains": "Lal Bagh"
+    }
+  },
+  {
+    "id": "eval_029",
+    "description": "Food + water + shelter combined - must pick highest urgency type",
+    "input": "Complete devastation at Mohana village. 200 people. No food, no water, no shelter. Everything destroyed by the cyclone last night. Most urgent is water as people are drinking from puddles.",
+    "expected": {
+      "need_type": "water",
+      "urgency_score_min": 9.0,
+      "urgency_score_max": 10.0,
+      "affected_count": 200
+    }
+  },
+  {
+    "id": "eval_030",
+    "description": "No contact info, no location - extraction must still succeed",
+    "input": "Several diabetic patients at a relief camp have run out of insulin. This is life threatening. Insulin and syringes needed immediately.",
+    "expected": {
+      "need_type": "medical",
+      "urgency_score_min": 9.0,
+      "urgency_score_max": 10.0,
+      "skills_needed_includes": ["medical_doctor"],
+      "contact_name": null,
+      "contact_detail": null
+    }
+  }
+]

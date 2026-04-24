@@ -1,30 +1,69 @@
-# Python
+# ── Secrets & credentials ─────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*serviceAccountKey*.json
+*service_account*.json
+*credentials*.json
+firebase-adminsdk*.json
+
+# ── Python ────────────────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
+*.pyo
+*.pyd
+.Python
+venv/
 .venv/
+env/
 *.egg-info/
 dist/
+build/
+.eggs/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+htmlcov/
+.coverage
+coverage.xml
+*.log
 
-# Env
-.env
-*.env
-
-# Firebase secrets — NEVER COMMIT
-infra/firebase/serviceAccountKey.json
-
-# Node
+# ── Node / Frontend ───────────────────────────────────────────────────────────
 node_modules/
-frontend/dist/
-frontend/.env
+dist/
+.next/
+.nuxt/
+.output/
+*.local
 
-# IDE
-.vscode/
-.idea/
-*.swp
+# ── Whisper / ML models ───────────────────────────────────────────────────────
+*.pt
+*.bin
+*.onnx
+*.pkl
+models/
 
-# OS
+# ── Firebase ──────────────────────────────────────────────────────────────────
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# ── OS ────────────────────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# ── IDEs ──────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.suo
+*.user
+
+# ── Misc ──────────────────────────────────────────────────────────────────────
+tmp/
+temp/
+*.tmp
+*.bak

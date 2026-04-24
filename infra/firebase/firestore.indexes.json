@@ -1,0 +1,90 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "need_cards",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status",            "order": "ASCENDING"  },
+        { "fieldPath": "urgency_score_eff", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "need_cards",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status",       "order": "ASCENDING"  },
+        { "fieldPath": "needs_review", "order": "ASCENDING"  },
+        { "fieldPath": "created_at",   "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "need_cards",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status",     "order": "ASCENDING" },
+        { "fieldPath": "need_type",  "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "need_cards",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "embedding",
+          "vectorConfig": { "dimension": 768, "flat": {} }
+        }
+      ]
+    },
+    {
+      "collectionGroup": "volunteers",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "availability", "order": "ASCENDING" },
+        { "fieldPath": "geohash_5",    "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "volunteers",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "availability",   "order": "ASCENDING"  },
+        { "fieldPath": "max_radius_km",  "order": "ASCENDING"  },
+        { "fieldPath": "updated_at",     "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "dispatch_log",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "volunteer_id",  "order": "ASCENDING"  },
+        { "fieldPath": "dispatched_at", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "dispatch_log",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "needcard_id",   "order": "ASCENDING"  },
+        { "fieldPath": "dispatched_at", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": [
+    {
+      "collectionGroup": "need_cards",
+      "fieldPath": "source_hashes",
+      "indexes": [
+        { "order": "ASCENDING",  "queryScope": "COLLECTION" },
+        { "order": "DESCENDING", "queryScope": "COLLECTION" },
+        { "arrayConfig": "CONTAINS", "queryScope": "COLLECTION" }
+      ]
+    },
+    {
+      "collectionGroup": "need_cards",
+      "fieldPath": "merged_from",
+      "indexes": [
+        { "arrayConfig": "CONTAINS", "queryScope": "COLLECTION" }
+      ]
+    }
+  ]
+}
