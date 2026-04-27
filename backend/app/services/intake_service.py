@@ -82,7 +82,6 @@ async def process_intake(payload: IntakePayload) -> IntakeResult:
     )
 
     # ── Step 2: Geocode location_text → lat/lng ───────────────────────────────
-    # Phase 1: geo stubbed (Step 5 of PRD builds this out)
     geo_lat, geo_lng, geo_confidence = 0.0, 0.0, 0.0
     location_text = extraction.location_text or ""
     if location_text:
@@ -95,8 +94,8 @@ async def process_intake(payload: IntakePayload) -> IntakeResult:
     # ── Step 3: Compute source hash for dedup Layer 1 ─────────────────────────
     source_hash = _hash_text(extraction.description_clean)
 
-    # ── Step 4: Dedup check (Layer 1 — exact hash) ────────────────────────────
-    # Phase 1: hash dedup only. Semantic dedup (Layer 2) added in Step 6.
+    # ── Step 4: Dedup check (Layer 1 — exact hash, Layer 2 — semantic) ───────
+    # Layer 1: exact hash match
     existing_id = await _check_exact_duplicate(source_hash, extraction.need_type.value)
     if existing_id:
         logger.info(f"Exact duplicate detected → merging into {existing_id}")
@@ -110,6 +109,27 @@ async def process_intake(payload: IntakePayload) -> IntakeResult:
             urgency_score=extraction.urgency_score,
             need_type=extraction.need_type.value,
         )
+
+    # Layer 2: semantic dedup — only when geo confidence is sufficient
+    if geo_confidence >= 0.3:
+        existing_id = await _check_semantic_duplicate(
+            description=extraction.description_clean,
+            need_type=extraction.need_type.value,
+            geo_lat=geo_lat,
+            geo_lng=geo_lng,
+        )
+        if existing_id:
+            logger.info(f"Semantic duplicate detected → merging into {existing_id}")
+            await _merge_into_existing(existing_id, source_hash, extraction.urgency_score)
+            return IntakeResult(
+                needcard_id=existing_id,
+                is_duplicate=True,
+                merged_into=existing_id,
+                extraction_failed=extraction.extraction_failed,
+                needs_review=payload.needs_review,
+                urgency_score=extraction.urgency_score,
+                need_type=extraction.need_type.value,
+            )
 
     # ── Step 5: Build NeedCard ────────────────────────────────────────────────
     card = NeedCard.from_extraction(
@@ -125,6 +145,9 @@ async def process_intake(payload: IntakePayload) -> IntakeResult:
     try:
         from app.db import needcard_repo
         await needcard_repo.create(card)
+        # Store embedding asynchronously for future semantic dedup
+        import asyncio
+        asyncio.create_task(_store_embedding_async(card.id, extraction.description_clean))
     except Exception as e:
         logger.error(f"Firestore write failed: {e}")
         # Still return the card ID — caller gets a result, ops team handles persistence
@@ -145,6 +168,108 @@ async def process_intake(payload: IntakePayload) -> IntakeResult:
 def _hash_text(text: str) -> str:
     normalized = " ".join(text.lower().split())
     return hashlib.sha256(normalized.encode()).hexdigest()
+
+
+async def _check_semantic_duplicate(
+    description: str,
+    need_type: str,
+    geo_lat: float,
+    geo_lng: float,
+    similarity_threshold: float = 0.88,
+) -> Optional[str]:
+    """
+    Layer 2 dedup: embed the incoming description and compare against nearby open cards.
+    Returns existing card ID if cosine similarity > threshold, else None.
+    """
+    try:
+        from app.db import needcard_repo
+
+        # Get embedding for incoming description
+        embedding = await _get_embedding(description)
+        if not embedding:
+            return None
+
+        # Find geo-nearby open cards of same type
+        candidates = await needcard_repo.find_open_in_geo_region(
+            need_type=need_type,
+            lat=geo_lat,
+            lng=geo_lng,
+            radius_deg=0.3,
+        )
+
+        best_id = None
+        best_sim = 0.0
+        for candidate in candidates:
+            if not candidate.embedding:
+                continue
+            sim = _cosine_similarity(embedding, candidate.embedding)
+            if sim > best_sim:
+                best_sim = sim
+                best_id = candidate.id
+
+        if best_sim >= similarity_threshold:
+            logger.info(f"Semantic dedup match: similarity={best_sim:.3f} → {best_id}")
+            return best_id
+
+        # Store embedding on the new card (will be on the NeedCard once created)
+        # We schedule this via a background fire-and-forget in Step 5
+        logger.debug(f"No semantic duplicate found (best_sim={best_sim:.3f})")
+        return None
+
+    except Exception as e:
+        logger.warning(f"Semantic dedup failed (non-fatal): {e}")
+        return None
+
+
+async def _get_embedding(text: str) -> Optional[list[float]]:
+    """Call Gemini embedding API (text-embedding-004)."""
+    try:
+        from app.core.config import settings
+        import httpx
+        api_key = settings.GEMINI_API_KEY
+        if not api_key:
+            return None
+
+        url = (
+            f"https://generativelanguage.googleapis.com/v1beta/models/"
+            f"gemini-embedding-001:embedContent?key={api_key}"
+        )
+        payload = {
+            "model": "models/gemini-embedding-001",
+            "content": {"parts": [{"text": text[:2000]}]},
+            "taskType": "SEMANTIC_SIMILARITY",
+        }
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.post(url, json=payload)
+            resp.raise_for_status()
+        return resp.json()["embedding"]["values"]
+    except Exception as e:
+        logger.warning(f"Embedding API call failed: {e}")
+        return None
+
+
+def _cosine_similarity(a: list[float], b: list[float]) -> float:
+    """Compute cosine similarity between two vectors."""
+    if len(a) != len(b):
+        return 0.0
+    dot = sum(x * y for x, y in zip(a, b))
+    mag_a = sum(x ** 2 for x in a) ** 0.5
+    mag_b = sum(x ** 2 for x in b) ** 0.5
+    if mag_a == 0 or mag_b == 0:
+        return 0.0
+    return dot / (mag_a * mag_b)
+
+
+async def _store_embedding_async(card_id: str, description: str) -> None:
+    """Store embedding vector on the NeedCard after creation (non-blocking path)."""
+    try:
+        from app.db import needcard_repo
+        embedding = await _get_embedding(description)
+        if embedding:
+            await needcard_repo.update_embedding(card_id, embedding)
+            logger.debug(f"Embedding stored for card {card_id}")
+    except Exception as e:
+        logger.warning(f"Background embedding store failed for {card_id}: {e}")
 
 
 async def _check_exact_duplicate(source_hash: str, need_type: str) -> Optional[str]:

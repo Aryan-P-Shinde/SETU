@@ -111,10 +111,14 @@ async def generate_brief(
         try:
             raw = await _call_gemini(prompt, api_key)
             return _process_response(raw, language_pref, prompt_version)
-        except (httpx.TimeoutException, httpx.HTTPStatusError) as e:
+        except httpx.HTTPStatusError as e:
             last_error = e
             logger.warning(f"Brief generation attempt {attempt + 1} failed: {e}")
-        except Exception as e:
+            if e.response.status_code == 429:
+                groq_result = await _try_groq_brief(prompt, language_pref, prompt_version)
+                if groq_result:
+                    return groq_result
+        except (httpx.TimeoutException, Exception) as e:
             last_error = e
             logger.warning(f"Brief generation attempt {attempt + 1} unexpected error: {e}")
 
@@ -166,7 +170,7 @@ async def _call_gemini(prompt: str, api_key: str) -> str:
 
     url = (
         "https://generativelanguage.googleapis.com/v1beta/models/"
-        f"gemini-1.5-pro:generateContent?key={api_key}"
+        f"gemini-2.0-flash:generateContent?key={api_key}"
     )
 
     async with httpx.AsyncClient(timeout=GEMINI_TIMEOUT_S) as client:
@@ -227,3 +231,46 @@ def _fallback_brief(language_pref: str, reason: str) -> BriefResult:
         generation_failed=True,
         prompt_version="fallback",
     )
+
+# ── Groq fallback for brief generation ────────────────────────────────────────
+
+GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+GROQ_MODEL = "llama-3.3-70b-versatile"
+
+
+async def _try_groq_brief(prompt: str, language_pref: str, prompt_version: str):
+    """Groq fallback for brief generation. Demo-only."""
+    from app.core.config import settings
+    groq_key = settings.GROQ_API_KEY
+    if not groq_key:
+        return None
+
+    logger.info("Gemini rate-limited — attempting Groq brief fallback (demo mode)")
+    try:
+        import httpx
+        payload = {
+            "model": GROQ_MODEL,
+            "messages": [
+                {"role": "user", "content": prompt},
+            ],
+            "temperature": 0.3,
+            "max_tokens": 300,
+        }
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            resp = await client.post(
+                GROQ_API_URL,
+                json=payload,
+                headers={
+                    "Authorization": f"Bearer {groq_key}",
+                    "Content-Type": "application/json",
+                },
+            )
+            resp.raise_for_status()
+
+        raw = resp.json()["choices"][0]["message"]["content"]
+        logger.info("Groq brief fallback succeeded")
+        return _process_response(raw, language_pref, prompt_version)
+
+    except Exception as e:
+        logger.warning(f"Groq brief fallback failed: {e}")
+        return None

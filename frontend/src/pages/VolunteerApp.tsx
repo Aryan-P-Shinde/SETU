@@ -628,12 +628,13 @@ export function VolunteerApp({ onBack }: { onBack?: () => void }) {
   const needColor = NEED_COLORS[card.need_type] || '#3a3a36'
 
   return (
+    <div style={{ height: '100vh', background: '#0d0d0b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
     <div style={{
       height: '100vh', display: 'flex', flexDirection: 'column',
       background: '#f5f2eb', color: '#0f0f0d',
       fontFamily: "'DM Sans', system-ui, sans-serif",
-      maxWidth: 480, margin: '0 auto',
-      boxShadow: '0 0 0 1px rgba(15,15,13,0.08), 0 4px 40px rgba(15,15,13,0.06)',
+      width: '100%', maxWidth: 480,
+      boxShadow: '0 0 0 1px rgba(255,255,255,0.06), 0 8px 60px rgba(0,0,0,0.55)',
     }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,700;1,9..144,300;1,9..144,400&family=DM+Sans:wght@300;400;500;600&display=swap');
@@ -788,7 +789,9 @@ export function VolunteerApp({ onBack }: { onBack?: () => void }) {
         ) : (
           <HistoryTab volunteer={volunteer} history={history} />
         )}
+        
       </div>
+    </div>
     </div>
   )
 }

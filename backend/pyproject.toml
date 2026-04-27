@@ -18,6 +18,11 @@ dependencies = [
     "firebase-admin>=6.5.0",
     "python-jose[cryptography]>=3.3.0",
     "python-multipart>=0.0.9",
+    # Local Whisper — free, no API cost. Requires ffmpeg system package (see Dockerfile).
+    # torch is the CPU-only build; saves ~2GB vs default which pulls CUDA.
+    "openai-whisper>=20231117",
+    "torch>=2.2.0",
+    "numpy>=1.26.0",
 ]
 
 [project.optional-dependencies]

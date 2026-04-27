@@ -27,21 +27,21 @@ const SAMPLE_CARDS = [
 ]
 
 const TICKER = [
-  'Processing voice note from Sylhet field worker...',
-  'NeedCard #308 dispatched — volunteer en route',
-  'Translating Hindi report from Patna district...',
-  'Urgency updated: shelter in Assam → 8.1',
-  'WhatsApp brief sent to Aarav S. (2.3 km away)',
-  'New image intake: handwritten form, West Bengal',
+  'Phase 1 — intake pipeline live · extraction, dedup, urgency scoring',
+  'Semantic dedup: text-embedding-004 · cosine similarity threshold 0.88',
+  'Urgency decay: U(t) = U₀ · e^(−0.05t) · half-life ≈ 14 hours',
+  'Multilingual extraction — Hindi, Bengali, Tamil, English, Odia',
+  'Phase 2 — WhatsApp delivery, FCM push, live volunteer matching',
+  'Channel-agnostic intake — text · voice · image · WhatsApp (Phase 2)',
 ]
 
 const PIPELINE = [
-  { step: '01', ch: 'RECEIVE',    desc: 'Voice notes, photos, WhatsApp messages — any language, any format' },
-  { step: '02', ch: 'UNDERSTAND', desc: 'Whisper transcribes audio. Gemini Vision reads handwritten forms.' },
-  { step: '03', ch: 'STRUCTURE',  desc: 'AI extracts need type, urgency score, location, contact details' },
-  { step: '04', ch: 'PRIORITISE', desc: 'NeedCards ranked, deduped, and mapped across the disaster zone' },
-  { step: '05', ch: 'DISPATCH',   desc: 'Nearest volunteer gets a WhatsApp brief in 30 seconds' },
-  { step: '06', ch: 'CLOSE',      desc: 'Card marked resolved. Coordinator sees live status across all needs' },
+  { step: '01', ch: 'RECEIVE',    desc: 'Text reports live now. Voice + image + WhatsApp in Phase 2 — pipeline is channel-agnostic by design.' },
+  { step: '02', ch: 'UNDERSTAND', desc: 'Gemini 1.5 Flash extracts structured fields from any language. Whisper transcription built, pending audio endpoint.' },
+  { step: '03', ch: 'STRUCTURE',  desc: 'AI outputs need type, urgency score 0–10, location text, contact, skills needed. Validated with Pydantic + 30-case eval set.' },
+  { step: '04', ch: 'PRIORITISE', desc: 'NeedCards ranked by effective urgency. Semantic dedup via text-embedding-004 merges repeated reports into signal.' },
+  { step: '05', ch: 'DISPATCH',   desc: 'Geo + skill matching selects nearest available volunteer. WhatsApp brief generated in under 3 seconds — FCM push in Phase 2.' },
+  { step: '06', ch: 'CLOSE',      desc: 'Volunteer marks mission complete. Card fulfilled. Coordinator sees live status across the entire disaster zone.' },
 ]
 
 const HERO_IMAGE = heroImg

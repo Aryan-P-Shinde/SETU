@@ -16,6 +16,10 @@ class Settings(BaseSettings):
     # Gemini
     GEMINI_API_KEY: str = ""
 
+    # Groq (fallback for demo — llama-3.3-70b)
+    # NOTE: demo only — production uses Gemini exclusively (Google DPA)
+    GROQ_API_KEY: str = ""
+
     # OpenAI (Whisper API)
     OPENAI_API_KEY: str = ""
 

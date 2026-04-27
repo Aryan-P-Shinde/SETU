@@ -28,7 +28,7 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 logger = logging.getLogger(__name__)
 
 GEMINI_TIMEOUT_S = 15.0
-EXTRACTION_RETRIES = 1
+EXTRACTION_RETRIES = 3
 PROMPTS_DIR = Path(__file__).parent.parent / "prompts"
 
 
@@ -176,13 +176,25 @@ async def extract_need_fields(
             raw_json = await _call_gemini(raw_text, system_prompt, api_key)
             result = _parse_and_validate(raw_json, source_channel, raw_text, prompt_version)
             return result
-        except (httpx.TimeoutException, httpx.HTTPStatusError) as e:
+        except httpx.HTTPStatusError as e:
             last_error = e
             logger.warning(f"Extraction attempt {attempt + 1} API error: {e}")
+            if e.response.status_code == 429:
+                # Try Groq fallback immediately on rate limit
+                groq_result = await _try_groq_fallback(raw_text, system_prompt, source_channel, prompt_version)
+                if groq_result:
+                    return groq_result
+                wait = 15 * (attempt + 1)
+                logger.info(f"Rate limited — waiting {wait}s before retry...")
+                import asyncio
+                await asyncio.sleep(wait)
+        except httpx.TimeoutException as e:
+            last_error = e
+            logger.warning(f"Extraction attempt {attempt + 1} timeout: {e}")
         except (json.JSONDecodeError, ValueError) as e:
             last_error = e
             logger.warning(f"Extraction attempt {attempt + 1} parse error: {e}")
-        except Exception as e:  # noqa: BLE001 — network, unexpected errors go to fallback
+        except Exception as e:  # noqa: BLE001
             last_error = e
             logger.warning(f"Extraction attempt {attempt + 1} unexpected error: {e}")
 
@@ -204,16 +216,15 @@ async def _call_gemini(raw_text: str, system_prompt: str, api_key: str) -> str:
             }
         ],
         "generationConfig": {
-            "temperature": 0.1,       # slight warmth helps with varied phrasing
+            "temperature": 0.1,
             "topP": 0.95,
             "maxOutputTokens": 1024,
-            "responseMimeType": "application/json",
         },
     }
 
     url = (
         "https://generativelanguage.googleapis.com/v1beta/models/"
-        f"gemini-1.5-pro:generateContent?key={api_key}"
+        f"gemini-2.0-flash:generateContent?key={api_key}"
     )
 
     async with httpx.AsyncClient(timeout=GEMINI_TIMEOUT_S) as client:
@@ -276,3 +287,61 @@ def _failed_extraction(
         extraction_failed=True,
         prompt_version=prompt_version,
     )
+
+# ── Groq fallback ─────────────────────────────────────────────────────────────
+# Demo-only fallback. Production uses Gemini exclusively.
+# Groq provides llama-3.3-70b via OpenAI-compatible API — free tier.
+
+GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+GROQ_MODEL = "llama-3.3-70b-versatile"
+
+
+async def _try_groq_fallback(
+    raw_text: str,
+    system_prompt: str,
+    source_channel,
+    prompt_version: str,
+) -> "ExtractionResult | None":
+    """
+    Try Groq as fallback when Gemini is rate-limited.
+    Returns ExtractionResult on success, None if Groq also fails.
+    NOTE: Demo environment only — not for production with real beneficiary data.
+    """
+    from app.core.config import settings
+    groq_key = settings.GROQ_API_KEY
+    if not groq_key:
+        logger.debug("GROQ_API_KEY not set — skipping fallback")
+        return None
+
+    logger.info("Gemini rate-limited — attempting Groq fallback (demo mode)")
+    try:
+        payload = {
+            "model": GROQ_MODEL,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Field report:\n\n{raw_text}"},
+            ],
+            "temperature": 0.1,
+            "max_tokens": 1024,
+        }
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            resp = await client.post(
+                GROQ_API_URL,
+                json=payload,
+                headers={
+                    "Authorization": f"Bearer {groq_key}",
+                    "Content-Type": "application/json",
+                },
+            )
+            resp.raise_for_status()
+
+        raw_json = resp.json()["choices"][0]["message"]["content"]
+        result = _parse_and_validate(raw_json, source_channel, raw_text, prompt_version)
+        # Mark that this came from the fallback
+        result.urgency_reasoning = f"[Groq fallback — demo mode] {result.urgency_reasoning}"
+        logger.info("Groq fallback extraction succeeded")
+        return result
+
+    except Exception as e:
+        logger.warning(f"Groq fallback also failed: {e}")
+        return None

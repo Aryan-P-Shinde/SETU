@@ -67,3 +67,7 @@ tmp/
 temp/
 *.tmp
 *.bak
+# Firebase service account key — NEVER commit
+infra/firebase/serviceAccountKey.json
+serviceAccountKey.json
+**/serviceAccountKey.json

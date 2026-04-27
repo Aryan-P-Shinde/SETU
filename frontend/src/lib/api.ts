@@ -137,4 +137,29 @@ export const getVolunteer = (volunteer_id: string) =>
 export const getVolunteerHistory = (volunteer_id: string) =>
   api.get<DispatchRecord[]>(`/volunteers/${volunteer_id}/history`)
 
+// ── New endpoints (Phase 2) ────────────────────────────────────────────────
+
+export interface QuickDispatchResponse {
+  dispatch_id: string
+  needcard_id: string
+  volunteer_id: string
+  distance_km: number
+  skill_overlap: string[]
+  match_score: number
+  status: string
+}
+
+export const quickDispatch = (needcard_id: string, volunteer_id?: string) =>
+  api.post<QuickDispatchResponse>('/dispatch/quick', { needcard_id, volunteer_id })
+
+export interface DecayRunResponse {
+  cards_processed: number
+  cards_updated: number
+  cards_staled: number
+  run_at: string
+}
+
+export const runDecay = () =>
+  api.post<DecayRunResponse>('/admin/run-decay')
+
 export default api
