@@ -2,7 +2,7 @@
 
 > **"Setu" (सेतु) means "bridge" in Sanskrit — a bridge between people in crisis and the volunteers who reach them.**
 
-SETU is an AI-powered intake-to-dispatch pipeline for disaster relief coordination. It solves a specific, documented problem: during the 2023 North India floods, a single field coordinator was managing 80–120 incoming help requests per day via phone and WhatsApp, with an average response lag of **3.5 hours** before a volunteer could be dispatched *(AIDMI Rapid Assessment Report, 2023)*. SETU reduces that to **under 3 minutes**.
+SETU is an AI-powered volunteer coordination platform that converts unstructured, multi-modal community distress signals — voice messages, photos, handwritten forms, WhatsApp texts — into structured, prioritized, actionable NeedCards, and matches them to the right volunteers with zero friction on either end.
 
 ---
 
@@ -27,16 +27,14 @@ SETU is an AI-powered intake-to-dispatch pipeline for disaster relief coordinati
 
 ## The Problem
 
-During major disasters in India — floods, earthquakes, cyclones — the coordination layer collapses before the supply chain does. NGO field coordinators receive hundreds of help requests across fragmented channels: WhatsApp groups, phone calls, paper forms, photos. They then manually:
+Local NGOs and social groups collect enormous amounts of data about community needs — through paper surveys, phone calls, WhatsApp messages, field visits. But this data is:
+•	Scattered across multiple places — WhatsApp groups, paper files, spreadsheets, verbal notes
+•	Unstructured — messy, inconsistent, not comparable across reports
+•	Inaccessible in real-time — no one knows what the biggest problem is right now
+•	Hard to act on — even when someone sees a need, connecting a volunteer to it is manual and slow
 
-1. Read and triage each report
-2. Decide urgency
-3. Find an available volunteer with the right skills
-4. Write and send a mission briefing
+SETU solves all four of these simultaneously. It is not just a database. It is not just a volunteer app. It is the intelligence layer that sits between raw human observation and coordinated action.
 
-This process is slow, exhausting, and error-prone. Duplicate reports go undetected. High-urgency needs get buried. Volunteers receive incomplete briefings in a language they struggle to parse under stress.
-
-**SETU replaces steps 1–4 with a 3-minute automated pipeline.** The NGO coordinator retains full authority — they see every decision, can override it, and approve every dispatch.
 
 ---
 
